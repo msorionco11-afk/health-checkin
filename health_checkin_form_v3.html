@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>今日の振り返り</title>
+<style>
+:root{--bg:#f4f3ef;--card:#fffefa;--ink:#303632;--muted:#68716b;--accent:#547b69;--soft:#e6eee8;--border:#d9dfd9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;font-size:16px;line-height:1.5}
+main{max-width:620px;margin:auto;padding:20px 14px 36px}h1{font-size:25px;margin:0 0 5px}.intro{font-size:14px;color:var(--muted);margin:0 0 15px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin:12px 0}.q{font-size:17px;font-weight:700;margin:0 0 10px}.hint{font-size:13px;color:var(--muted);margin:-5px 0 10px}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.choices.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.choice{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;min-height:48px;padding:9px 6px;border:1px solid var(--border);border-radius:11px;background:white;font-size:14px;cursor:pointer}
+.choice input{position:absolute;opacity:0;width:1px;height:1px}.choice:has(input:checked){background:var(--soft);border:2px solid var(--accent);font-weight:700;padding:8px 5px}
+select{font:inherit;padding:10px;border:1px solid var(--border);border-radius:10px;background:white;color:var(--ink);min-width:84px}.sleep{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:4px 0 14px}
+.check{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;padding:10px;margin:7px 0;background:white}.check input{width:20px;height:20px;accent-color:var(--accent)}
+textarea{font:inherit;width:100%;min-height:90px;border:1px solid var(--border);border-radius:10px;padding:11px;background:white;color:var(--ink)}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:15px;min-height:52px;width:100%;cursor:pointer}.primary{background:var(--accent);color:white}.secondary{background:#e8e9e5;color:var(--ink);margin-top:9px}
+#output{display:none;border:2px solid var(--accent);scroll-margin-top:12px}#result{min-height:200px}.status{font-size:14px;color:var(--accent);margin:9px 0 0}.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>今日の振り返り</h1>
+<p class="intro">選ぶだけでもOK。空欄があっても回答を作れます。</p>
+<form id="f" autocomplete="off">
+<section class="card"><p class="q">① 体調</p><div class="choices three">
+<label class="choice"><input type="radio" name="body" value="おおむね良好">おおむね良好</label>
+<label class="choice"><input type="radio" name="body" value="少し不調">少し不調</label>
+<label class="choice"><input type="radio" name="body" value="かなり不調">かなり不調</label></div></section>
+<section class="card"><p class="q">② 疲れ具合</p><div class="choices three">
+<label class="choice"><input type="radio" name="fatigue" value="余裕あり">余裕あり</label>
+<label class="choice"><input type="radio" name="fatigue" value="少し疲れた">少し疲れた</label>
+<label class="choice"><input type="radio" name="fatigue" value="かなり疲れた">かなり疲れた</label></div></section>
+<section class="card"><p class="q">③ 気分</p><div class="choices">
+<label class="choice"><input type="radio" name="mood" value="穏やか">穏やか</label>
+<label class="choice"><input type="radio" name="mood" value="普通">普通</label>
+<label class="choice"><input type="radio" name="mood" value="イライラ・落ち着かない">イライラ・落ち着かない</label>
+<label class="choice"><input type="radio" name="mood" value="落ち込み・しんどい">落ち込み・しんどい</label></div></section>
+<section class="card"><p class="q">④ 睡眠</p><p class="hint">昨夜の睡眠時間</p>
+<div class="sleep"><select id="hours" aria-label="時間"><option value="">選択</option></select><span>時間</span>
+<select id="minutes" aria-label="分"><option value="">選択</option><option value="0">0</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select><span>分</span></div>
+<div class="choices three">
+<label class="choice"><input type="radio" name="sleep" value="よく眠れた">よく眠れた</label>
+<label class="choice"><input type="radio" name="sleep" value="普通">普通</label>
+<label class="choice"><input type="radio" name="sleep" value="あまり眠れなかった">あまり眠れなかった</label></div></section>
+<section class="card"><p class="q">⑤ 今日の出来事</p><p class="hint">複数選択できます</p>
+<label class="check"><input type="checkbox" name="event" value="よかったこと・できたこと">よかったこと・できたこと</label>
+<label class="check"><input type="checkbox" name="event" value="疲れたこと・ストレス">疲れたこと・ストレス</label>
+<label class="check"><input type="checkbox" name="event" value="特になし">特になし</label>
+<p class="hint" style="margin:14px 0 8px">一言メモ（任意）</p><textarea id="memo" placeholder="例：夕食後、少しゆっくりできた"></textarea></section>
+<section class="card"><p class="q">⑥ 服薬</p><div class="choices">
+<label class="choice"><input type="radio" name="meds" value="飲んだ">飲んだ</label>
+<label class="choice"><input type="radio" name="meds" value="これから飲む">これから飲む</label>
+<label class="choice"><input type="radio" name="meds" value="今日の対象なし">今日の対象なし</label>
+<label class="choice"><input type="radio" name="meds" value="飲み忘れた">飲み忘れた</label></div></section>
+<button class="primary" type="button" id="make">回答文を作る</button>
+<button class="secondary" type="button" id="clear">入力をリセット</button>
+</form>
+<section class="card" id="output"><p class="q">ChatGPTに貼り付ける回答</p><p class="hint">回答文が下の枠に表示されます。</p><textarea id="result" readonly></textarea><button class="primary" type="button" id="copy" style="margin-top:10px">回答文をコピー</button><p class="status" id="status" aria-live="polite"></p></section>
+<p class="small">このフォームは回答文を作成するだけで、自動送信・保存はしません。</p>
+</main>
+<script>
+(function(){
+ const $=id=>document.getElementById(id), form=$('f');
+ for(let i=0;i<=16;i++){let o=document.createElement('option');o.value=String(i);o.textContent=String(i);$('hours').appendChild(o);}
+ function checked(name){let e=form.querySelector('input[name="'+name+'"]:checked');return e?e.value:'';}
+ $('make').addEventListener('click',function(){
+   try{
+    let d=new Date(), lines=['🌙 '+d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' 今日の振り返り'];
+    let pairs=[['体調',checked('body')],['疲れ具合',checked('fatigue')],['気分',checked('mood')]];
+    pairs.forEach(p=>{if(p[1])lines.push(p[0]+'：'+p[1]);});
+    let h=$('hours').value,m=$('minutes').value,s=checked('sleep');
+    if(h!==''||m!=='')lines.push('睡眠時間：'+(h!==''?h+'時間':'')+(m!==''?m+'分':''));
+    if(s)lines.push('眠りの状態：'+s);
+    let ev=Array.from(form.querySelectorAll('input[name="event"]:checked')).map(e=>e.value);
+    if(ev.length)lines.push('今日の出来事：'+ev.join('、'));
+    let memo=$('memo').value.trim();if(memo)lines.push('一言メモ：'+memo);
+    let meds=checked('meds');if(meds)lines.push('服薬：'+meds);
+    if(lines.length===1)lines.push('今日は記録できる項目なし');
+    $('result').value=lines.join('\n');
+    $('output').style.display='block';
+    $('status').textContent='回答文を作成しました。内容を確認してコピーしてください。';
+    $('output').scrollIntoView({block:'start'});
+   }catch(err){$('output').style.display='block';$('result').value='回答文の作成中にエラーが発生しました：'+err.message;}
+ });
+ $('copy').addEventListener('click',function(){
+   let r=$('result');r.focus();r.select();
+   try{let ok=document.execCommand('copy');$('status').textContent=ok?'コピーしました。ChatGPTの「ふりかえり」に貼り付けてください。':'文章を選択しました。長押しして「コピー」を選んでください。';}
+   catch(e){$('status').textContent='文章を選択しました。長押しして「コピー」を選んでください。';}
+ });
+ $('clear').addEventListener('click',function(){form.reset();$('output').style.display='none';$('result').value='';$('status').textContent='';window.scrollTo(0,0);});
+})();
+</script>
+</body></html>
